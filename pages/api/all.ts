@@ -9,10 +9,10 @@ const PROJECT_NAME = 'railtrack';
 
 const messagesToBeSent = ['First one', 'Second one', 'Third one', 'Fourth one'];
 
-export default function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
   if (req.method === 'POST') {
     try {
-      messagesToBeSent.forEach((message) => {
+      const allMessages = messagesToBeSent.map((message) =>
         fetch(API_URL, {
           method: 'POST',
           headers: {
@@ -25,8 +25,10 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
             event: 'Test event',
             description: message,
           }),
-        });
-      });
+        })
+      );
+
+      await Promise.all(allMessages);
 
       res.status(200).json({ message: 'Sent requests successfully' });
     } catch (error) {
